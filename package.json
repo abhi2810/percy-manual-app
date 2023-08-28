@@ -1,6 +1,6 @@
 {
   "name": "percy-manual",
-  "productName": "Percy Manual",
+  "productName": "Percy-Manual",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": "src/index.js",
@@ -9,7 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "dev": "npx electronmon ."
+    "dev": "NODE_ENV=dev npx electronmon ."
   },
   "keywords": [],
   "author": {

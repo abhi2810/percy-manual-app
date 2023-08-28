@@ -1,6 +1,6 @@
 module.exports = {
   packagerConfig: {
-    asar: true,
+    extraResource: ["./src/binary"],
   },
   rebuildConfig: {},
   makers: [
@@ -21,10 +21,5 @@ module.exports = {
       config: {},
     },
   ],
-  plugins: [
-    {
-      name: "@electron-forge/plugin-auto-unpack-natives",
-      config: {},
-    },
-  ],
+  plugins: [],
 };

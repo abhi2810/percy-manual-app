@@ -1,6 +1,11 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const { spawn } = require("child_process");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const { getPlatform } = require("./util/get-platform");
+const { runScript } = require("./util/cli-operations");
+const { createDataFolder } = require("./util/file-operations");
+
+const IS_DEV = process.env.NODE_ENV === "dev";
+const PLATFORM = getPlatform();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -20,7 +25,7 @@ const createWindow = () => {
     },
   });
   // mainWindow.maximize();
-
+  createDataFolder();
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
@@ -51,52 +56,28 @@ app.on("activate", () => {
 });
 
 ipcMain.on("captureSnapshot-action", (event, arg) => {
-  run_script("npx percy snapshot " + arg.file);
+  process.env["PERCY_TOKEN"] = arg.token;
+  if (IS_DEV) {
+    mainWindow.webContents.send("captureSnapshot-response", process.arch);
+    runScript(`npx percy snapshot ${arg.file}`, mainWindow);
+  } else {
+    var percyCLI = PLATFORM === "win" ? "run.cmd" : "run.cjs";
+    var nodeCLI = PLATFORM === "win" ? "node.exe" : "node";
+    const percyPath = path.join(
+      path.dirname(process.execPath),
+      "..",
+      "./Resources",
+      "./app/node_modules/@percy/cli/bin",
+      `./${percyCLI}`
+    );
+    const nodePath = path.join(
+      path.dirname(process.execPath),
+      "..",
+      "./Resources",
+      "./binary",
+      `./${PLATFORM}-${process.arch}/${nodeCLI}`
+    );
+    runScript(`${nodePath} ${percyPath} snapshot ${arg.file}`, mainWindow);
+  }
   console.log(arg);
 });
-
-function run_script(command, args, callback) {
-  var child = spawn(command, args, {
-    encoding: "utf8",
-    shell: true,
-    env: { ...process.env },
-  });
-  // You can also use a variable to save the output for when the script closes later
-  child.on("error", (error) => {
-    dialog.showMessageBox({
-      title: "Title",
-      type: "warning",
-      message: "Error occured.\r\n" + error,
-    });
-  });
-
-  child.stdout.setEncoding("utf8");
-  child.stdout.on("data", (data) => {
-    //Here is the output
-    data = data.toString();
-    mainWindow.webContents.send("captureSnapshot-response", data);
-    console.log(data);
-  });
-
-  child.stderr.setEncoding("utf8");
-  child.stderr.on("data", (data) => {
-    // Return some data to the renderer process with the mainprocess-response ID
-    mainWindow.webContents.send("captureSnapshot-response", data);
-    //Here is the output from the command
-    console.log(data);
-  });
-
-  child.on("close", (code) => {
-    //Here you can get the exit code of the script
-    switch (code) {
-      case 0:
-        dialog.showMessageBox({
-          title: "Title",
-          type: "info",
-          message: "End process.\r\n",
-        });
-        break;
-    }
-  });
-  if (typeof callback === "function") callback();
-}
