@@ -2,22 +2,96 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Percy Manual</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Percy Manual (alpha)</title>
+    <link rel="stylesheet" href="css/sakura.css" type="text/css" />
     <link rel="stylesheet" href="index.css" />
     <script defer src="render.js"></script>
   </head>
   <body>
-    <div id="myDIV" class="header">
-      <h2>Percy Manual</h2>
+    <div class="loading" style="display: none">
+      <div class="uil-ring-css" style="transform: scale(0.79)">
+        <div></div>
+      </div>
+    </div>
+    <div id="percyTokenSection" class="main-block">
+      <h2>Percy Token and Branch</h2>
       <input
         type="text"
         id="percyToken"
-        value="1deebc72590d96714435ee344cfd4102611cffd6614150443f589764add47dbb"
         placeholder="Percy Token"
+        style="min-width: 50%"
       />
-      <span onclick="captureSnapshot()" class="addBtn">Capture Snapshot</span>
+      <input type="text" id="percyBranch" placeholder="Percy Branch" />
+      <button onclick="captureSnapshot()" id="snapshotButton">
+        Capture Snapshot
+      </button>
     </div>
-
-    <ul id="myUL"></ul>
+    <hr />
+    <div id="percyConfigSection" class="main-block">
+      <h2>Percy Config</h2>
+      <textarea
+        id="percyConfig"
+        placeholder="Percy Config (Optional)"
+        disabled
+      ></textarea>
+      <button onclick="toggleConfigEdit(this)" class="addBtn">Edit</button>
+    </div>
+    <hr />
+    <div id="snapshotSection" class="main-block">
+      <h2>Snapshot Web URLs</h2>
+      <button id="addButton" onclick="addUrl()" style="visibility: hidden">
+        +
+      </button>
+      <button id="editToggle" onclick="toggleEdit(this)">Edit</button>
+      <button id="importButton" onclick="importSnapshot()">Import</button>
+      <button id="exportButton" onclick="exportSnapshot()">Export</button>
+      <table id="weburls">
+        <tr>
+          <th>Snapshot Name*</th>
+          <th>Website URL*</th>
+          <th>Wait Time</th>
+        </tr>
+        <tr>
+          <div class="snapshotListItem">
+            <td>
+              <input
+                class="snapshotName"
+                type="text"
+                placeholder="Add Snapshot Name*"
+                required
+                disabled
+              />
+            </td>
+            <td>
+              <input
+                class="url"
+                type="text"
+                placeholder="Add Website URL*"
+                required
+                disabled
+              />
+            </td>
+            <td>
+              <input
+                class="waitTime"
+                type="number"
+                placeholder="Add Wait Time (Optional)"
+                disabled
+              />
+            </td>
+            <td>
+              <button
+                class="removeButton"
+                onclick="removeUrl(this)"
+                style="visibility: hidden"
+              >
+                -
+              </button>
+            </td>
+          </div>
+        </tr>
+      </table>
+    </div>
   </body>
 </html>
