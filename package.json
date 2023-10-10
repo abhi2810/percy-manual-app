@@ -1,7 +1,7 @@
 {
   "name": "percy-manual",
   "productName": "Percy-Manual-alpha",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2-alpha",
   "description": "My Electron application description",
   "main": "src/index.js",
   "scripts": {
@@ -18,8 +18,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@percy/cli": "^1.26.3",
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "@percy/cli": "^1.27.3"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.4.1",

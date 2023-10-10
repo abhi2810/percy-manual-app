@@ -19,6 +19,7 @@ const {
   percyBranchFileExists,
   loadPercyBranchFile,
   createPercyBranchFile,
+  snapshotYMLFilePath,
 } = require("./util/file-operations");
 
 const IS_DEV = process.env.NODE_ENV === "dev";
@@ -216,7 +217,7 @@ ipcMain.on("captureSnapshot-action", (event, arg) => {
     if (IS_DEV) {
       mainWindow.webContents.send("captureSnapshot-response", process.arch);
       runScript(
-        `npx percy snapshot ${snapshotFilePath} -c ${percyConfigFilePath}`,
+        `npx percy snapshot ${snapshotYMLFilePath} -c ${percyConfigFilePath}`,
         mainWindow
       );
     } else {
@@ -234,10 +235,10 @@ ipcMain.on("captureSnapshot-action", (event, arg) => {
         "..",
         "./Resources",
         "./binary",
-        `./${PLATFORM}-${process.arch}/${nodeCLI}`
+        `./${PLATFORM}/${nodeCLI}`
       );
       runScript(
-        `${nodePath} ${percyPath} snapshot ${snapshotFilePath} -c ${percyConfigFilePath}`,
+        `${nodePath} ${percyPath} snapshot ${snapshotYMLFilePath} -c ${percyConfigFilePath}`,
         mainWindow
       );
     }

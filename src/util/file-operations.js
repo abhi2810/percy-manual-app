@@ -2,12 +2,29 @@ const { app } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
+const scrollYML = `
+references:
+  scrollDown: &scrollDown |
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    for (let i = 0; i < document.body.scrollHeight; i += 100) {
+      window.scrollTo(0, i);
+      await delay(100);
+    }
+
+snapshots:
+`;
+
 const homePath = app.getPath("home");
 const percyManualHome = path.join(homePath, "./.percy-manual");
 const snapshotFilePath = path.join(
   homePath,
   "./.percy-manual",
   "./snapshot.json"
+);
+const snapshotYMLFilePath = path.join(
+  homePath,
+  "./.percy-manual",
+  "./snapshot.yml"
 );
 const percyConfigFilePath = path.join(
   homePath,
@@ -35,8 +52,23 @@ const snapshotFileExists = () => {
   return fs.existsSync(snapshotFilePath);
 };
 
-const createSnapshotFile = (webUrls, callback) => {
-  fs.writeFile(snapshotFilePath, JSON.stringify(webUrls), "utf8", callback);
+const createSnapshotFile = (snapshotJson, callback) => {
+  var str = scrollYML;
+  for (var i in snapshotJson) {
+    str += `
+  - name: ${snapshotJson[i]["name"]}
+    url: ${snapshotJson[i]["url"]}
+    waitForTimeout: ${snapshotJson[i]["waitForTimeout"]}
+    execute: *scrollDown`;
+  }
+  str += `\n`;
+  fs.writeFileSync(snapshotYMLFilePath, str, "utf8");
+  fs.writeFile(
+    snapshotFilePath,
+    JSON.stringify(snapshotJson),
+    "utf8",
+    callback
+  );
 };
 
 const loadSnapshotFile = (callback) => {
@@ -99,3 +131,4 @@ exports.loadPercyBranchFile = loadPercyBranchFile;
 exports.moveSnapshotFile = moveSnapshotFile;
 exports.snapshotFilePath = snapshotFilePath;
 exports.percyConfigFilePath = percyConfigFilePath;
+exports.snapshotYMLFilePath = snapshotYMLFilePath;
