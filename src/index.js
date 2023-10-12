@@ -235,7 +235,7 @@ ipcMain.on("captureSnapshot-action", (event, arg) => {
         "..",
         "./Resources",
         "./binary",
-        `./${PLATFORM}/${nodeCLI}`
+        `./${PLATFORM}-${process.arch}/${nodeCLI}`
       );
       runScript(
         `${nodePath} ${percyPath} snapshot ${snapshotYMLFilePath} -c ${percyConfigFilePath}`,
